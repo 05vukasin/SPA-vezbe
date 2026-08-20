@@ -2,23 +2,39 @@ package z24_palindromJSL;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
         System.out.println("=== z24 daLiJePalindrom ===");
 
-        JSLista a = new JSLista();
-        for (int v : new int[]{1, 2, 3, 2, 1}) a.dodajNaKraj(v);
-        boolean p1 = false; String d1;
-        try { boolean r = a.daLiJePalindrom(); d1 = String.valueOf(r); p1 = (r == true); }
-        catch (Exception e) { d1 = e.getClass().getSimpleName(); }
-        System.out.println("[1] " + a.ispis() + ": ocekivano=true    dobijeno=" + d1 + "   -> " + (p1 ? "OK" : "NIJE"));
+        oceni("neparni palindrom",   "true",  pal(new int[]{1, 2, 3, 2, 1}));
+        oceni("parni palindrom",     "true",  pal(new int[]{1, 2, 2, 1}));
+        oceni("nije palindrom",      "false", pal(new int[]{1, 2, 3}));
+        oceni("jedan el. (true)",    "true",  pal(new int[]{7}));
+        oceni("prazna (true)",       "true",  pal(new int[]{}));
+        oceni("dva jednaka (true)",  "true",  pal(new int[]{5, 5}));
+        oceni("dva razlicita",       "false", pal(new int[]{5, 8}));
+        oceni("skoro palindrom",     "false", pal(new int[]{1, 2, 3, 2, 2}));
 
-        JSLista b = new JSLista();
-        for (int v : new int[]{1, 2, 3}) b.dodajNaKraj(v);
-        boolean p2 = false; String d2;
-        try { boolean r = b.daLiJePalindrom(); d2 = String.valueOf(r); p2 = (r == false); }
-        catch (Exception e) { d2 = e.getClass().getSimpleName(); }
-        System.out.println("[2] " + b.ispis() + ": ocekivano=false   dobijeno=" + d2 + "   -> " + (p2 ? "OK" : "NIJE"));
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
 
-        System.out.println("REZULTAT:   " + (p1 && p2 ? "PASS" : "FAIL"));
+    static String pal(int[] vrednosti) {
+        try {
+            JSLista lista = new JSLista();
+            for (int v : vrednosti) lista.dodajNaKraj(v);
+            return String.valueOf(lista.daLiJePalindrom());
+        } catch (Exception e) {
+            return e.getClass().getSimpleName();
+        }
+    }
+
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

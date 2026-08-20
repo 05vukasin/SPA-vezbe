@@ -2,28 +2,40 @@ package z26_obrniDSL;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
-        DSLista lista = new DSLista();
-        for (int v : new int[]{10, 20, 30, 40}) lista.dodajNaKraj(v);
-
         System.out.println("=== z26 obrniDSL ===");
-        System.out.println("pre:        " + lista.ispis());
 
-        String napred, nazad;
-        boolean pass = false;
+        // Format rezultata: "<napred preko sledeci> || <unazad preko prethodni>"
+        // (proverava i vrednosti i konzistentnost prev/next pokazivaca)
+        oceni("prazna",            " || ",                       obrni(new int[]{}));
+        oceni("jedan element",     "42 || 42",                   obrni(new int[]{42}));
+        oceni("dva elementa",      "20 10 || 10 20",             obrni(new int[]{10, 20}));
+        oceni("cetiri elementa",   "40 30 20 10 || 10 20 30 40", obrni(new int[]{10, 20, 30, 40}));
+        oceni("pet elemenata",     "5 4 3 2 1 || 1 2 3 4 5",     obrni(new int[]{1, 2, 3, 4, 5}));
+        oceni("negativni/duplikati","-3 5 -3 || -3 5 -3",        obrni(new int[]{-3, 5, -3}));
+
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
+
+    static String obrni(int[] vrednosti) {
         try {
+            DSLista lista = new DSLista();
+            for (int v : vrednosti) lista.dodajNaKraj(v);
             lista.obrniDSL();
-            napred = lista.sekvenca();          // preko 'sledeci'
-            nazad  = lista.sekvencaUnazad();    // preko 'prethodni'
-            boolean okNapred = "40 30 20 10".equals(napred);
-            boolean okNazad  = "10 20 30 40".equals(nazad); // od kraja unazad = originalni redosled
-            pass = okNapred && okNazad;
-            System.out.println("napred (sledeci):    " + napred + "   -> " + (okNapred ? "OK" : "NIJE (ocek. 40 30 20 10)"));
-            System.out.println("unazad (prethodni):  " + nazad + "   -> " + (okNazad ? "OK" : "NIJE (ocek. 10 20 30 40)"));
+            return lista.sekvenca() + " || " + lista.sekvencaUnazad();
         } catch (Exception e) {
-            System.out.println("greska: " + e.getClass().getSimpleName() + " (" + e.getMessage() + ")");
+            return e.getClass().getSimpleName();
         }
+    }
 
-        System.out.println("REZULTAT:   " + (pass ? "PASS" : "FAIL"));
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

@@ -2,27 +2,42 @@ package z27_izbaciParneDSL;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
-        DSLista lista = new DSLista();
-        for (int v : new int[]{1, 2, 3, 4, 5, 6}) lista.dodajNaKraj(v);
-
         System.out.println("=== z27 izbaciParne ===");
-        System.out.println("pre:        " + lista.ispis());
 
-        boolean pass = false;
+        // Format rezultata: "<napred preko sledeci> || <unazad preko prethodni>"
+        oceni("parni na pocetku",  "1 3 || 3 1",            izbaci(new int[]{2, 1, 3}));
+        oceni("parni na kraju",    "1 3 || 3 1",            izbaci(new int[]{1, 3, 4}));
+        oceni("paran u sredini",   "1 3 || 3 1",            izbaci(new int[]{1, 2, 3}));
+        oceni("svi parni -> prazna"," || ",                 izbaci(new int[]{2, 4, 6}));
+        oceni("nijedan paran",     "1 3 5 || 5 3 1",        izbaci(new int[]{1, 3, 5}));
+        oceni("prazna lista",      " || ",                  izbaci(new int[]{}));
+        oceni("negativni i nula",  "-3 -5 || -5 -3",        izbaci(new int[]{-2, -3, -4, -5, 0}));
+        oceni("jedan paran",       " || ",                  izbaci(new int[]{4}));
+        oceni("jedan neparan",     "7 || 7",                izbaci(new int[]{7}));
+
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
+
+    static String izbaci(int[] vrednosti) {
         try {
+            DSLista lista = new DSLista();
+            for (int v : vrednosti) lista.dodajNaKraj(v);
             lista.izbaciParne();
-            String napred = lista.sekvenca();
-            String nazad  = lista.sekvencaUnazad();
-            boolean okNapred = "1 3 5".equals(napred);
-            boolean okNazad  = "5 3 1".equals(nazad);
-            pass = okNapred && okNazad;
-            System.out.println("napred (sledeci):    " + napred + "   -> " + (okNapred ? "OK" : "NIJE (ocek. 1 3 5)"));
-            System.out.println("unazad (prethodni):  " + nazad + "   -> " + (okNazad ? "OK" : "NIJE (ocek. 5 3 1)"));
+            return lista.sekvenca() + " || " + lista.sekvencaUnazad();
         } catch (Exception e) {
-            System.out.println("greska: " + e.getClass().getSimpleName() + " (" + e.getMessage() + ")");
+            return e.getClass().getSimpleName();
         }
+    }
 
-        System.out.println("REZULTAT:   " + (pass ? "PASS" : "FAIL"));
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

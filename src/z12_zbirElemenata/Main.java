@@ -2,40 +2,61 @@ package z12_zbirElemenata;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
         System.out.println("=== z12 zbirElemenata ===");
 
-        // --- Provera 1: neprazno stablo -> zbir 350 ---
-        BinarnoStablo stablo = new BinarnoStablo();
-        stablo.generator();
-        System.out.println("stablo (infiks): " + stablo.ispisInfiks());
+        // prazno stablo -> MORA baciti izuzetak (RuntimeException, ne UnsupportedOperation)
+        oceni("prazno baca izuzetak", "RuntimeException", zbir(null));
 
-        boolean provera1 = false;
-        String d1;
+        // jedan cvor -> vrednost
+        oceni("jedan cvor (42)", "42", zbir(new CvorStabla(42)));
+
+        // dva cvora: 10(5,_) -> 15
+        oceni("dva cvora (15)", "15",
+                zbir(new CvorStabla(10, new CvorStabla(5), null)));
+
+        // balansirano standardno -> 350
+        oceni("balansirano (350)", "350",
+                zbir(new CvorStabla(50,
+                        new CvorStabla(30, new CvorStabla(20), new CvorStabla(40)),
+                        new CvorStabla(70, new CvorStabla(60), new CvorStabla(80)))));
+
+        // negativne vrednosti: -10(-5(-3,_),-2) -> -20
+        oceni("negativne (-20)", "-20",
+                zbir(new CvorStabla(-10,
+                        new CvorStabla(-5, new CvorStabla(-3), null),
+                        new CvorStabla(-2))));
+
+        // mesano poz/neg: 5(-10,20) -> 15
+        oceni("mesano (15)", "15",
+                zbir(new CvorStabla(5, new CvorStabla(-10), new CvorStabla(20))));
+
+        // koso desno: 1(_,2(_,3)) -> 6
+        oceni("koso desno (6)", "6",
+                zbir(new CvorStabla(1, null,
+                        new CvorStabla(2, null, new CvorStabla(3)))));
+
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
+
+    static String zbir(CvorStabla koren) {
         try {
-            int rez = stablo.zbirElemenata();
-            d1 = String.valueOf(rez);
-            provera1 = (rez == 350);
+            BinarnoStablo stablo = new BinarnoStablo();
+            stablo.koren = koren;
+            return String.valueOf(stablo.zbirElemenata());
         } catch (Exception e) {
-            d1 = e.getClass().getSimpleName() + " (" + e.getMessage() + ")";
+            return e.getClass().getSimpleName();
         }
-        System.out.println("[1] zbir: ocekivano=350   dobijeno=" + d1 + "   -> " + (provera1 ? "OK" : "NIJE"));
+    }
 
-        // --- Provera 2: prazno stablo -> mora baciti izuzetak (ne UnsupportedOperation) ---
-        BinarnoStablo prazno = new BinarnoStablo(); // koren == null
-        boolean provera2 = false;
-        String d2;
-        try {
-            int rez = prazno.zbirElemenata();
-            d2 = "vratio " + rez + " (a trebalo je da baci izuzetak)";
-        } catch (UnsupportedOperationException e) {
-            d2 = "jos nije implementirano";
-        } catch (Exception e) {
-            d2 = "bacio " + e.getClass().getSimpleName();
-            provera2 = true;
-        }
-        System.out.println("[2] prazno stablo baca izuzetak: dobijeno=" + d2 + "   -> " + (provera2 ? "OK" : "NIJE"));
-
-        System.out.println("REZULTAT:   " + (provera1 && provera2 ? "PASS" : "FAIL"));
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

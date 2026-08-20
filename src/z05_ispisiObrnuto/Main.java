@@ -5,36 +5,43 @@ import java.io.PrintStream;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
-        JSLista lista = new JSLista();
-        lista.dodajNaKraj(10);
-        lista.dodajNaKraj(20);
-        lista.dodajNaKraj(30);
-
-        String ocekivano = "30 20 10";
-
         System.out.println("=== z05 ispisiObrnuto ===");
-        System.out.println("lista:      " + lista.ispis());
 
-        // hvatamo sve sto metoda ispise na System.out
+        oceni("prazna lista",          "",             obrnuto(new int[]{}));
+        oceni("jedan element",         "42",           obrnuto(new int[]{42}));
+        oceni("dva elementa",          "20 10",        obrnuto(new int[]{10, 20}));
+        oceni("tri (primer)",          "30 20 10",     obrnuto(new int[]{10, 20, 30}));
+        oceni("duplikati vrednosti",   "7 7 5 5",      obrnuto(new int[]{5, 5, 7, 7}));
+        oceni("negativne vrednosti",   "3 -2 -1",      obrnuto(new int[]{-1, -2, 3}));
+
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
+
+    static String obrnuto(int[] vrednosti) {
         PrintStream stari = System.out;
-        ByteArrayOutputStream buf = new ByteArrayOutputStream();
-        String dobijeno;
-        boolean pass = false;
         try {
+            JSLista lista = new JSLista();
+            for (int v : vrednosti) lista.dodajNaKraj(v);
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
             System.setOut(new PrintStream(buf));
             lista.ispisiObrnuto(lista.prvi);
             System.setOut(stari);
-            // normalizacija: sve praznine -> jedan razmak
-            dobijeno = buf.toString().trim().replaceAll("\\s+", " ");
-            pass = ocekivano.equals(dobijeno);
+            return buf.toString().trim().replaceAll("\\s+", " ");
         } catch (Exception e) {
             System.setOut(stari);
-            dobijeno = e.getClass().getSimpleName() + " (" + e.getMessage() + ")";
+            return e.getClass().getSimpleName();
         }
+    }
 
-        System.out.println("ocekivano:  " + ocekivano);
-        System.out.println("dobijeno:   " + dobijeno);
-        System.out.println("REZULTAT:   " + (pass ? "PASS" : "FAIL"));
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: '" + ocekivano + "' | dobijeno: '" + dobijeno + "'");
     }
 }

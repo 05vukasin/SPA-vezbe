@@ -41,11 +41,16 @@ public void izbaciTrenutni(CJSL neki) {
 1. Otvori paket `src/zXX_.../` i u njemu **konkretnu klasu**.
 2. Pročitaj **tekst zadatka** na vrhu klase.
 3. Izbaci `throw new UnsupportedOperationException(...)` i **napiši rešenje**.
-4. Pokreni `Main` tog paketa i gledaj `REZULTAT: PASS/FAIL`.
-5. Kada prođe, čekiraj zadatak u [`CHECKLISTA.md`](CHECKLISTA.md).
+4. Pokreni `Main` tog paketa. On pokreće **više testova** (uključujući granične slučajeve) i za
+   svaki ispisuje `[PASS]`/`[FAIL]`, pa na kraju zbir: `REZULTAT: X/N — SVE PROŠLO ✅ / IMA PADOVA ❌`.
+5. Kada svi testovi prođu (`SVE PROŠLO`), čekiraj zadatak u [`CHECKLISTA.md`](CHECKLISTA.md).
 
-Dok metoda nije implementirana, driver ispiše `dobijeno: UnsupportedOperationException` i
-`REZULTAT: FAIL` — to je normalno, znači zadatak čeka tebe.
+Svaki zadatak ima **6–9 testova** koji pokrivaju granične slučajeve (prazna/jedna/dve stavke,
+prvi/poslednji/srednji element, duplikati, negativne vrednosti, prazno stablo, itd.) — cilj je da
+rešenje bude ispravno na *svim* testovima, ne samo na jednom primeru.
+
+Dok metoda nije implementirana, svaki test ispiše `dobijeno: UnsupportedOperationException` i dobiješ
+`REZULTAT: 0/N — IMA PADOVA ❌` — to je normalno, znači zadatak čeka tebe.
 
 ### Pokretanje
 

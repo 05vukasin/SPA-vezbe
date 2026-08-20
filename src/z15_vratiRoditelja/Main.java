@@ -2,33 +2,57 @@ package z15_vratiRoditelja;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
+    // standardno stablo: 50(30(20,40),70(60,80))
+    static CvorStabla stablo() {
+        return new CvorStabla(50,
+                new CvorStabla(30, new CvorStabla(20), new CvorStabla(40)),
+                new CvorStabla(70, new CvorStabla(60), new CvorStabla(80)));
+    }
+
     public static void main(String[] args) {
-        BinarnoStablo stablo = new BinarnoStablo();
-        stablo.generator();
-
         System.out.println("=== z15 vratiRoditelja ===");
-        System.out.println("stablo (infiks): " + stablo.ispisInfiks());
 
-        // Provera 1: roditelj od 40 je 30
-        boolean p1 = false;
-        String d1;
+        // roditelj lista 40 -> 30
+        oceni("roditelj lista 40", "30", roditelj(stablo(), 40));
+
+        // roditelj lista 80 (desna strana) -> 70
+        oceni("roditelj lista 80", "70", roditelj(stablo(), 80));
+
+        // roditelj unutrasnjeg 30 -> 50
+        oceni("roditelj unutrasnjeg 30", "50", roditelj(stablo(), 30));
+
+        // roditelj unutrasnjeg 70 -> 50
+        oceni("roditelj unutrasnjeg 70", "50", roditelj(stablo(), 70));
+
+        // vrednost je u korenu (50) -> null
+        oceni("koren 50 -> null", "null", roditelj(stablo(), 50));
+
+        // vrednost ne postoji (999) -> null
+        oceni("nepostojeca 999 -> null", "null", roditelj(stablo(), 999));
+
+        // jedan cvor, trazi njegovu vrednost -> null (koren nema roditelja)
+        oceni("jedan cvor -> null", "null", roditelj(new CvorStabla(7), 7));
+
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
+
+    static String roditelj(CvorStabla koren, int vrednost) {
         try {
-            CvorStabla r = stablo.vratiRoditelja(stablo.koren, 40);
-            d1 = (r == null) ? "null" : String.valueOf(r.podatak);
-            p1 = (r != null && r.podatak == 30);
-        } catch (Exception e) { d1 = e.getClass().getSimpleName(); }
-        System.out.println("[1] roditelj(40): ocekivano=30    dobijeno=" + d1 + "   -> " + (p1 ? "OK" : "NIJE"));
+            CvorStabla r = new BinarnoStablo().vratiRoditelja(koren, vrednost);
+            return (r == null) ? "null" : String.valueOf(r.podatak);
+        } catch (Exception e) {
+            return e.getClass().getSimpleName();
+        }
+    }
 
-        // Provera 2: roditelj korena (50) je null
-        boolean p2 = false;
-        String d2;
-        try {
-            CvorStabla r = stablo.vratiRoditelja(stablo.koren, 50);
-            d2 = (r == null) ? "null" : String.valueOf(r.podatak);
-            p2 = (r == null);
-        } catch (Exception e) { d2 = e.getClass().getSimpleName(); }
-        System.out.println("[2] roditelj(50): ocekivano=null  dobijeno=" + d2 + "   -> " + (p2 ? "OK" : "NIJE"));
-
-        System.out.println("REZULTAT:   " + (p1 && p2 ? "PASS" : "FAIL"));
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

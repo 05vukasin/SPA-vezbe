@@ -2,25 +2,41 @@ package z29_binarnaPretraga;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
-        Niz z = new Niz();
-        int[] a = {1, 3, 5, 7, 9, 11};
-
         System.out.println("=== z29 binarnaPretraga ===");
-        System.out.println("niz:        " + ANiz.kaoTekst(a));
 
-        int[] x        = {7, 4, 1, 11};
-        int[] ocekivani = {3, -1, 0, 5};
+        // Ugovor: vrati INDEKS elementa x u sortiranom nizu, ili -1 ako ga nema.
+        int[] a = {1, 3, 5, 7, 9, 11};
+        oceni("sredina (7)",         "3",  pretraga(a, 7));
+        oceni("prvi (1)",            "0",  pretraga(a, 1));
+        oceni("poslednji (11)",      "5",  pretraga(a, 11));
+        oceni("nema ga izmedju (4)", "-1", pretraga(a, 4));
+        oceni("nema ga ispod (0)",   "-1", pretraga(a, 0));
+        oceni("nema ga iznad (100)", "-1", pretraga(a, 100));
+        oceni("jedan el. pogodak",   "0",  pretraga(new int[]{5}, 5));
+        oceni("jedan el. promasaj",  "-1", pretraga(new int[]{5}, 3));
+        oceni("prazan niz",          "-1", pretraga(new int[]{}, 1));
 
-        int ok = 0;
-        for (int i = 0; i < x.length; i++) {
-            String d; boolean pass = false;
-            try { int r = z.binarnaPretraga(a, x[i]); d = String.valueOf(r); pass = (r == ocekivani[i]); }
-            catch (Exception e) { d = e.getClass().getSimpleName(); }
-            if (pass) ok++;
-            System.out.println("  x=" + x[i] + ": ocekivano=" + ocekivani[i] + "   dobijeno=" + d + "   -> " + (pass ? "OK" : "NIJE"));
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
+
+    static String pretraga(int[] a, int x) {
+        try {
+            Niz z = new Niz();
+            return String.valueOf(z.binarnaPretraga(a, x));
+        } catch (Exception e) {
+            return e.getClass().getSimpleName();
         }
+    }
 
-        System.out.println("REZULTAT:   " + (ok == x.length ? "PASS" : "FAIL"));
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

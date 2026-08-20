@@ -2,35 +2,61 @@ package z20_daLiJeAVL;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
         System.out.println("=== z20 daLiJeAVL ===");
 
-        // Provera 1: balansirano -> true
-        BinarnoStablo avl = new BinarnoStablo();
-        avl.generator();
-        System.out.println("stablo 1 (infiks): " + avl.ispisInfiks());
-        boolean p1 = false;
-        String d1;
-        try {
-            boolean r = avl.daLiJeAVL(avl.koren);
-            d1 = String.valueOf(r);
-            p1 = (r == true);
-        } catch (Exception e) { d1 = e.getClass().getSimpleName(); }
-        System.out.println("[1] ocekivano=true   dobijeno=" + d1 + "   -> " + (p1 ? "OK" : "NIJE"));
+        // 1) balansirano -> true
+        oceni("balansirano", "true",
+                test(cv(50, cv(30, cv(20), cv(40)), cv(70, cv(60), cv(80)))));
 
-        // Provera 2: nebalansirano -> false
-        BinarnoStablo nije = new BinarnoStablo();
-        nije.generatorNijeAVL();
-        System.out.println("stablo 2 (infiks): " + nije.ispisInfiks());
-        boolean p2 = false;
-        String d2;
-        try {
-            boolean r = nije.daLiJeAVL(nije.koren);
-            d2 = String.valueOf(r);
-            p2 = (r == false);
-        } catch (Exception e) { d2 = e.getClass().getSimpleName(); }
-        System.out.println("[2] ocekivano=false  dobijeno=" + d2 + "   -> " + (p2 ? "OK" : "NIJE"));
+        // 2) razlika visina = 2 kod korena -> false
+        oceni("off-by-2 (koso desno)", "false",
+                test(cv(50, null, cv(60, null, cv(70)))));
 
-        System.out.println("REZULTAT:   " + (p1 && p2 ? "PASS" : "FAIL"));
+        // 3) jedan cvor -> true
+        oceni("jedan cvor", "true", test(cv(42)));
+
+        // 4) prazno stablo (null koren) -> true
+        oceni("prazno stablo", "true", test(null));
+
+        // 5) koso levo (lanac) -> false
+        oceni("koso levo", "false",
+                test(cv(50, cv(40, cv(30, cv(20), null), null), null)));
+
+        // 6) duboko ali balansirano -> true
+        oceni("duboko balansirano", "true",
+                test(cv(50,
+                        cv(30, cv(20, cv(10), cv(25)), cv(40)),
+                        cv(70, cv(60), cv(80, cv(75), cv(90))))));
+
+        // 7) razlika tacno 1 -> jeste AVL
+        oceni("razlika tacno 1", "true",
+                test(cv(50, cv(30, cv(20), null), cv(70))));
+
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
     }
+
+    static String test(CvorStabla koren) {
+        try {
+            BinarnoStablo s = new BinarnoStablo();
+            s.koren = koren;
+            return String.valueOf(s.daLiJeAVL(koren));
+        } catch (Exception e) {
+            return e.getClass().getSimpleName();
+        }
+    }
+
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
+    }
+
+    static CvorStabla cv(int v, CvorStabla l, CvorStabla d) { return new CvorStabla(v, l, d); }
+    static CvorStabla cv(int v) { return new CvorStabla(v); }
 }

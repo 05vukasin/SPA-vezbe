@@ -2,27 +2,40 @@ package z21_ubaciSortirano;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
         System.out.println("=== z21 ubaciSortirano ===");
 
-        // Provera 1: ubacivanje u sredinu
-        JSLista a = new JSLista();
-        for (int v : new int[]{10, 20, 40, 50}) a.dodajNaKraj(v);
-        String d1;
-        boolean p1 = false;
-        try { a.ubaciSortirano(30); d1 = a.ispis(); p1 = "10 -> 20 -> 30 -> 40 -> 50".equals(d1); }
-        catch (Exception e) { d1 = e.getClass().getSimpleName(); }
-        System.out.println("[1] x=30: ocekivano=10 -> 20 -> 30 -> 40 -> 50   dobijeno=" + d1 + "   -> " + (p1 ? "OK" : "NIJE"));
+        oceni("ubaci u sredinu (30)",     "10 -> 20 -> 30 -> 40 -> 50", ubaci(new int[]{10, 20, 40, 50}, 30));
+        oceni("ubaci na pocetak (5)",     "5 -> 10 -> 20 -> 40 -> 50",  ubaci(new int[]{10, 20, 40, 50}, 5));
+        oceni("ubaci na kraj (60)",       "10 -> 20 -> 40 -> 50 -> 60", ubaci(new int[]{10, 20, 40, 50}, 60));
+        oceni("ubaci u praznu (7)",       "7",                          ubaci(new int[]{}, 7));
+        oceni("duplikat (20)",            "10 -> 20 -> 20 -> 40 -> 50", ubaci(new int[]{10, 20, 40, 50}, 20));
+        oceni("jedan el., ide ispred",    "3 -> 8",                     ubaci(new int[]{8}, 3));
+        oceni("jedan el., ide iza",       "8 -> 15",                    ubaci(new int[]{8}, 15));
+        oceni("jednak prvom (10)",        "10 -> 10 -> 20 -> 40 -> 50", ubaci(new int[]{10, 20, 40, 50}, 10));
 
-        // Provera 2: ubacivanje na pocetak (menja se prvi)
-        JSLista b = new JSLista();
-        for (int v : new int[]{10, 20, 40, 50}) b.dodajNaKraj(v);
-        String d2;
-        boolean p2 = false;
-        try { b.ubaciSortirano(5); d2 = b.ispis(); p2 = "5 -> 10 -> 20 -> 40 -> 50".equals(d2); }
-        catch (Exception e) { d2 = e.getClass().getSimpleName(); }
-        System.out.println("[2] x=5:  ocekivano=5 -> 10 -> 20 -> 40 -> 50   dobijeno=" + d2 + "   -> " + (p2 ? "OK" : "NIJE"));
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
 
-        System.out.println("REZULTAT:   " + (p1 && p2 ? "PASS" : "FAIL"));
+    static String ubaci(int[] vrednosti, int x) {
+        try {
+            JSLista lista = new JSLista();
+            for (int v : vrednosti) lista.dodajNaKraj(v);
+            lista.ubaciSortirano(x);
+            return lista.ispis();
+        } catch (Exception e) {
+            return e.getClass().getSimpleName();
+        }
+    }
+
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

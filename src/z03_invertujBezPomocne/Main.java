@@ -2,28 +2,39 @@ package z03_invertujBezPomocne;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
-        JSLista lista = new JSLista();
-        lista.dodajNaKraj(10);
-        lista.dodajNaKraj(20);
-        lista.dodajNaKraj(30);
-        lista.dodajNaKraj(40);
-
-        String ocekivano = "40 -> 30 -> 20 -> 10";
-
         System.out.println("=== z03 invertovanjeBezPomocne ===");
-        System.out.println("pocetna:    " + lista.ispis());
 
-        String dobijeno;
+        oceni("prazna lista",          "prazna",                inv(new int[]{}));
+        oceni("jedan element",         "42",                    inv(new int[]{42}));
+        oceni("dva elementa",          "20 -> 10",              inv(new int[]{10, 20}));
+        oceni("tri elementa",          "30 -> 20 -> 10",        inv(new int[]{10, 20, 30}));
+        oceni("cetiri (primer)",       "40 -> 30 -> 20 -> 10",  inv(new int[]{10, 20, 30, 40}));
+        oceni("duplikati vrednosti",   "7 -> 7 -> 5 -> 5",      inv(new int[]{5, 5, 7, 7}));
+        oceni("negativne vrednosti",   "3 -> -2 -> -1",         inv(new int[]{-1, -2, 3}));
+
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
+
+    static String inv(int[] vrednosti) {
         try {
+            JSLista lista = new JSLista();
+            for (int v : vrednosti) lista.dodajNaKraj(v);
             lista.invertovanjeBezPomocne();
-            dobijeno = lista.ispis();
+            return lista.ispis();
         } catch (Exception e) {
-            dobijeno = e.getClass().getSimpleName() + " (" + e.getMessage() + ")";
+            return e.getClass().getSimpleName();
         }
+    }
 
-        System.out.println("ocekivano:  " + ocekivano);
-        System.out.println("dobijeno:   " + dobijeno);
-        System.out.println("REZULTAT:   " + (ocekivano.equals(dobijeno) ? "PASS" : "FAIL"));
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

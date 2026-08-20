@@ -1,32 +1,43 @@
 package z01_izbaciTrenutni;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
-// Driver: pravi test-podatke, poziva tvoju metodu i proverava rezultat.
+// Driver: pokreće više testova, uključujući GRANIČNE slučajeve.
+// Cilj: da svi testovi budu [PASS]. Dok metoda nije gotova -> svi [FAIL].
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
-        JSLista lista = new JSLista();
-        lista.dodajNaKraj(10);
-        lista.dodajNaKraj(20);
-        lista.dodajNaKraj(30);
-        lista.dodajNaKraj(40);
-
-        CJSL neki = lista.cvorNa(2); // cvor sa vrednoscu 30
-        String ocekivano = "10 -> 20 -> 40";
-
         System.out.println("=== z01 izbaciTrenutni ===");
-        System.out.println("pocetna:    " + lista.ispis());
-        System.out.println("izbacujem:  " + neki.podatak);
 
-        String dobijeno;
+        oceni("izbaci iz sredine (30)",  "10 -> 20 -> 40",  izbaci(new int[]{10, 20, 30, 40}, 2));
+        oceni("izbaci prvi (10)",        "20 -> 30 -> 40",  izbaci(new int[]{10, 20, 30, 40}, 0));
+        oceni("izbaci poslednji (40)",   "10 -> 20 -> 30",  izbaci(new int[]{10, 20, 30, 40}, 3));
+        oceni("dva el., izbaci prvi",    "20",              izbaci(new int[]{10, 20}, 0));
+        oceni("dva el., izbaci drugi",   "10",              izbaci(new int[]{10, 20}, 1));
+        oceni("jedan el., izbaci njega", "prazna",          izbaci(new int[]{42}, 0));
+
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
+
+    // Napravi listu, izbaci čvor na indeksu 'idx', vrati ispis liste (ili ime izuzetka).
+    static String izbaci(int[] vrednosti, int idx) {
         try {
+            JSLista lista = new JSLista();
+            for (int v : vrednosti) lista.dodajNaKraj(v);
+            CJSL neki = lista.cvorNa(idx);
             lista.izbaciTrenutni(neki);
-            dobijeno = lista.ispis();
+            return lista.ispis();
         } catch (Exception e) {
-            dobijeno = e.getClass().getSimpleName() + " (" + e.getMessage() + ")";
+            return e.getClass().getSimpleName();
         }
+    }
 
-        System.out.println("ocekivano:  " + ocekivano);
-        System.out.println("dobijeno:   " + dobijeno);
-        System.out.println("REZULTAT:   " + (ocekivano.equals(dobijeno) ? "PASS" : "FAIL"));
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }

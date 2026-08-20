@@ -2,31 +2,55 @@ package z33_identicna;
 
 // ====== DATO (simulira .jar) — NE DIRATI ======
 public class Main {
+    static int ukupno = 0, proslo = 0;
+
     public static void main(String[] args) {
-        BinarnoStablo s = new BinarnoStablo();
-
-        CvorStabla a = new CvorStabla(50,
-                new CvorStabla(30, new CvorStabla(20), new CvorStabla(40)),
-                new CvorStabla(70, new CvorStabla(60), new CvorStabla(80)));
-        CvorStabla b = new CvorStabla(50,
-                new CvorStabla(30, new CvorStabla(20), new CvorStabla(40)),
-                new CvorStabla(70, new CvorStabla(60), new CvorStabla(80)));
-        CvorStabla c = new CvorStabla(50,
-                new CvorStabla(30, new CvorStabla(20), new CvorStabla(40)),
-                new CvorStabla(70, new CvorStabla(60), new CvorStabla(99)));
-
         System.out.println("=== z33 daLiSuIdenticna ===");
 
-        boolean p1 = false; String d1;
-        try { boolean r = s.daLiSuIdenticna(a, b); d1 = String.valueOf(r); p1 = (r == true); }
-        catch (Exception e) { d1 = e.getClass().getSimpleName(); }
-        System.out.println("[1] a vs b (isti):     ocekivano=true    dobijeno=" + d1 + "   -> " + (p1 ? "OK" : "NIJE"));
+        // identicni
+        oceni("identicni", "true", ident(base(), base()));
+        // razlicita vrednost (80 -> 99)
+        oceni("razlicita vrednost", "false", ident(base(), new CvorStabla(50,
+                new CvorStabla(30, new CvorStabla(20), new CvorStabla(40)),
+                new CvorStabla(70, new CvorStabla(60), new CvorStabla(99)))));
+        // razlicit oblik (nedostaje desno dete cvora 30)
+        oceni("razlicit oblik", "false", ident(base(), new CvorStabla(50,
+                new CvorStabla(30, new CvorStabla(20), null),
+                new CvorStabla(70, new CvorStabla(60), new CvorStabla(80)))));
+        // oba prazna
+        oceni("oba prazna", "true", ident(null, null));
+        // jedno prazno
+        oceni("jedno prazno", "false", ident(base(), null));
+        // ogledalo, ali NIJE identicno
+        oceni("ogledalo (nije isto)", "false", ident(base(), new CvorStabla(50,
+                new CvorStabla(70, new CvorStabla(80), new CvorStabla(60)),
+                new CvorStabla(30, new CvorStabla(40), new CvorStabla(20)))));
+        // jedan cvor iste vrednosti
+        oceni("jedan cvor (isti)", "true", ident(new CvorStabla(5), new CvorStabla(5)));
 
-        boolean p2 = false; String d2;
-        try { boolean r = s.daLiSuIdenticna(a, c); d2 = String.valueOf(r); p2 = (r == false); }
-        catch (Exception e) { d2 = e.getClass().getSimpleName(); }
-        System.out.println("[2] a vs c (razlicit): ocekivano=false   dobijeno=" + d2 + "   -> " + (p2 ? "OK" : "NIJE"));
+        System.out.println("\nREZULTAT: " + proslo + "/" + ukupno
+                + (proslo == ukupno ? "  — SVE PROŠLO ✅" : "  — IMA PADOVA ❌"));
+    }
 
-        System.out.println("REZULTAT:   " + (p1 && p2 ? "PASS" : "FAIL"));
+    static CvorStabla base() {
+        return new CvorStabla(50,
+                new CvorStabla(30, new CvorStabla(20), new CvorStabla(40)),
+                new CvorStabla(70, new CvorStabla(60), new CvorStabla(80)));
+    }
+
+    static String ident(CvorStabla a, CvorStabla b) {
+        try {
+            return String.valueOf(new BinarnoStablo().daLiSuIdenticna(a, b));
+        } catch (Exception e) {
+            return e.getClass().getSimpleName();
+        }
+    }
+
+    static void oceni(String naziv, String ocekivano, String dobijeno) {
+        ukupno++;
+        boolean ok = ocekivano.equals(dobijeno);
+        if (ok) proslo++;
+        System.out.println((ok ? "  [PASS] " : "  [FAIL] ") + naziv
+                + "   ->  ocekivano: " + ocekivano + " | dobijeno: " + dobijeno);
     }
 }
